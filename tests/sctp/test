@@ -25,21 +25,37 @@ BEGIN {
 
         # asconf parameter tests require two local non-loopback addresses.
         $ipaddress_list = `ip -o addr show up scope global`;
-        $test_asconf    = 0;
-        $count          = 0;
-        $ipaddress[0]   = 0;
-        $ipaddress[1]   = 0;
+        $test_asconf4   = 0;
+        $test_asconf6   = 0;
+        $test_asconf64  = 0;
+        $ipv4count      = 0;
+        $ipv4addr[0]    = 0;
+        $ipv4addr[1]    = 0;
+        $ipv6count      = 0;
+        $ipv6addr[0]    = 0;
+        $ipv6addr[1]    = 0;
 
         for my $line ( split /\n/, $ipaddress_list ) {
-            if ( $line =~ /inet ([^ \/]+)/ && $count < 2 ) {
-                $ipaddress[$count] = $1;
-                $count++;
+            if ( $line =~ /inet ([^ \/]+)/ && $ipv4count < 2 ) {
+                $ipv4addr[$ipv4count] = $1;
+                $ipv4count++;
+            } elsif ( $line =~ /inet6 ([^ \/]+)/ && $ipv6count < 2 ) {
+                $ipv6addr[$ipv6count] = $1;
+                $ipv6count++;
             }
         }
 
-        if ( $ipaddress[1] ne 0 ) {
+        if ( $ipv4count == 2 ) {
             $test_count += 2;
-            $test_asconf = 1;
+            $test_asconf4 = 1;
+        }
+        if ( $ipv6count == 2 ) {
+            $test_count += 2;
+            $test_asconf6 = 1;
+        }
+        if ( $ipv6count >= 1 and $ipv4count >= 1 ) {
+            $test_count += 2;
+            $test_asconf64 = 1;
         }
 
         # Determine if CALIPSO supported by netlabelctl(8) and kernel.
@@ -165,8 +181,8 @@ ok( $result eq 0 );
 #
 
 # These tests require two local non-loopback addresses.
-if ($test_asconf) {
-    print "# Testing asconf parameter chunk processing.\n";
+if ($test_asconf4) {
+    print "# Testing asconf IPv4 parameter chunk processing.\n";
 
     # To enable processing of incoming ASCONF parameters:
     # SCTP_PARAM_SET_PRIMARY, SCTP_PARAM_ADD_IP and SCTP_PARAM_DEL_IP,
@@ -176,19 +192,85 @@ if ($test_asconf) {
 
     # Verify ASCONF params.
     $result = system
-"runcon -t test_sctp_set_peer_addr_t $basedir/sctp_set_peer_addr $v $ipaddress[0] $ipaddress[1] 1035";
+"runcon -t test_sctp_set_peer_addr_t $basedir/sctp_set_peer_addr $v $ipv4addr[0] $ipv4addr[1] 1035";
     ok( $result eq 0 );
 
     # Start the asconf server.
     $pid = server_start(
         "-t test_sctp_set_peer_addr_t",
         "sctp_asconf_params_server",
-        "$v $ipaddress[0] $ipaddress[1] 1035"
+        "$v $ipv4addr[0] $ipv4addr[1] 1035"
     );
 
 # This should fail connect permission attempting to send SCTP_PARAM_ADD_IP to client.
     $result = system
-"runcon -t test_sctp_client_t -- $basedir/sctp_asconf_params_client $v $ipaddress[0] 1035 2>&1";
+"runcon -t test_sctp_client_t -- $basedir/sctp_asconf_params_client $v $ipv4addr[0] 1035 2>&1";
+    ok($result);
+
+    # The server should automatically exit.
+    server_end($pid);
+
+    system("echo 0 > /proc/sys/net/sctp/addip_enable");
+    system("echo 0 > /proc/sys/net/sctp/addip_noauth_enable");
+}
+
+if ($test_asconf6) {
+    print "# Testing asconf IPv4 parameter chunk processing.\n";
+
+    # To enable processing of incoming ASCONF parameters:
+    # SCTP_PARAM_SET_PRIMARY, SCTP_PARAM_ADD_IP and SCTP_PARAM_DEL_IP,
+    # need to set:
+    system("echo 1 > /proc/sys/net/sctp/addip_enable");
+    system("echo 1 > /proc/sys/net/sctp/addip_noauth_enable");
+
+    # Verify ASCONF params.
+    $result = system
+"runcon -t test_sctp_set_peer_addr_t $basedir/sctp_set_peer_addr $v $ipv6addr[0] $ipv6addr[1] 1035";
+    ok( $result eq 0 );
+
+    # Start the asconf server.
+    $pid = server_start(
+        "-t test_sctp_set_peer_addr_t",
+        "sctp_asconf_params_server",
+        "$v $ipv6addr[0] $ipv6addr[1] 1035"
+    );
+
+# This should fail connect permission attempting to send SCTP_PARAM_ADD_IP to client.
+    $result = system
+"runcon -t test_sctp_client_t -- $basedir/sctp_asconf_params_client $v $ipv6addr[0] 1035 2>&1";
+    ok($result);
+
+    # The server should automatically exit.
+    server_end($pid);
+
+    system("echo 0 > /proc/sys/net/sctp/addip_enable");
+    system("echo 0 > /proc/sys/net/sctp/addip_noauth_enable");
+}
+
+if ($test_asconf64) {
+    print "# Testing asconf IPv4 parameter chunk processing.\n";
+
+    # To enable processing of incoming ASCONF parameters:
+    # SCTP_PARAM_SET_PRIMARY, SCTP_PARAM_ADD_IP and SCTP_PARAM_DEL_IP,
+    # need to set:
+    system("echo 1 > /proc/sys/net/sctp/addip_enable");
+    system("echo 1 > /proc/sys/net/sctp/addip_noauth_enable");
+
+    # Verify ASCONF params.
+    $result = system
+"runcon -t test_sctp_set_peer_addr_t $basedir/sctp_set_peer_addr $v $ipv6addr[0] $ipv4addr[0] 1035";
+    ok( $result eq 0 );
+
+    # Start the asconf server.
+    $pid = server_start(
+        "-t test_sctp_set_peer_addr_t",
+        "sctp_asconf_params_server",
+        "$v $ipv6addr[0] $ipv4addr[0] 1035"
+    );
+
+# This should fail connect permission attempting to send SCTP_PARAM_ADD_IP to client.
+    $result = system
+"runcon -t test_sctp_client_t -- $basedir/sctp_asconf_params_client $v $ipv6addr[0] 1035 2>&1";
     ok($result);
 
     # The server should automatically exit.
