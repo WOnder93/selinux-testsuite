@@ -12,4 +12,4 @@ addons:
 
 script:
   - tools/check-syntax -f && git diff --exit-code
-  - make
+  - make -C tests

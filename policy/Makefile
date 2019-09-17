@@ -94,17 +94,19 @@ expand_check:
 		(echo "ERROR: set 'expand-check = 0' in /etc/selinux/semanage.conf"; \
 		 /bin/false)
 
-build: $(TARGETS)
-	# General policy build
+test_policy/test_policy.te: $(TARGETS) test_policy.if
 	@if [ -d $(POLDEV) ]; then \
 		mkdir -p test_policy; \
 		cp test_policy.if test_policy; \
 		set -e; rm -f test_policy.te; \
 		cat $(TARGETS) > test_policy/test_policy.te; \
-		$(MAKE) -C test_policy -f $(POLDEV)/Makefile test_policy.pp; \
 	else \
 		echo "ERROR: You must have selinux-policy-devel installed."; \
 	fi
+
+build: test_policy/test_policy.te
+	# General policy build
+	$(MAKE) -C test_policy -f $(POLDEV)/Makefile test_policy.pp;
 
 load: expand_check all
 	# General policy load
