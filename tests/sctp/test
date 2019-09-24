@@ -169,8 +169,8 @@ ok($result);
 #
 print "# Testing connectx.\n";
 
-run46_ok( "-t test_sctp_client_t", "sctp_connectx", "stream", 1035 );
-run46_ok( "-t test_sctp_client_t", "sctp_connectx", "seq",    1035 );
+run46_ok( "-t test_sctp_connectx_t", "sctp_connectx", "stream", 1035 );
+run46_ok( "-t test_sctp_connectx_t", "sctp_connectx", "seq",    1035 );
 
 #
 ################################ BINDX #######################################
