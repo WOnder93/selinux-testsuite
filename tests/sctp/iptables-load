@@ -1,6 +1,9 @@
 #!/bin/sh
 ############################ SECMARK IPTABLE ENTRIES ########################
 #
+
+test -f /proc/net/if_inet6 || alias ip6tables=true
+
 # Flush the security table first:
 iptables -t security -F
 ip6tables -t security -F
