@@ -21,8 +21,8 @@ BEGIN {
         plan skip_all => "SCTP not supported";
     }
     else {
-        $test_count_ipv4 = 71;
-        $test_count_ipv6 = 0;
+        $test_count_ipv4 = 77;
+        $test_count_ipv6 = 21;
 
         # asconf parameter tests require two local non-loopback addresses.
         $ipaddress_list = `ip -o addr show up scope global`;
