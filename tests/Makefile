@@ -52,8 +52,12 @@ ifeq ($(shell grep -q all_key_perms $(POLDEV)/include/support/all_perms.spt && e
 SUBDIRS += keys
 endif
 
-ifeq ($(shell grep -q key_socket $(POLDEV)/include/support/all_perms.spt && test -e $(INCLUDEDIR)/keyutils.h && echo true),true)
+ifeq ($(shell grep -q key_socket $(POLDEV)/include/support/all_perms.spt && echo true),true)
+ifeq ($(shell grep -q module_request $(POLDEV)/include/support/all_perms.spt && echo true),true)
+ifeq ($(shell test -e $(INCLUDEDIR)/keyutils.h && echo true),true)
 SUBDIRS += key_socket
+endif
+endif
 endif
 
 ifeq ($(shell grep "^SELINUX_INFINIBAND_ENDPORT_TEST=" infiniband_endport/ibendport_test.conf | cut -d'=' -f 2),1)

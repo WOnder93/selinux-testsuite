@@ -94,7 +94,9 @@ TARGETS+=test_notify.te
 endif
 
 ifeq ($(shell grep -q key_socket $(POLDEV)/include/support/all_perms.spt && echo true),true)
+ifeq ($(shell grep -q module_request $(POLDEV)/include/support/all_perms.spt && echo true),true)
 TARGETS += test_key_socket.te
+endif
 endif
 
 ifeq (x$(DISTRO),$(filter x$(DISTRO),xRHEL4 xRHEL5 xRHEL6))
