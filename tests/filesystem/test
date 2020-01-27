@@ -31,10 +31,19 @@ BEGIN {
         $test_count += 4;
     }
 
+    sub getenv {
+        my ( $key, $default ) = @_;
+        return exists( $ENV{$key} ) ? $ENV{$key} : $default;
+    }
+
+    $checkpolicy = getenv( "CHECKPOLICY", "checkpolicy" );
+    $checkmodule = getenv( "CHECKMODULE", "checkmodule" );
+    $selinuxfs   = getenv( "SELINUXFS",   "/sys/fs/selinux" );
+
     $test_name_trans   = 0;
-    $pol_vers          = `checkpolicy -V | cut -f 1 -d ' '`;
-    $mod_pol_vers      = `checkmodule -V | cut -f 2 -d '-'`;
-    $max_kernel_policy = `cat /sys/fs/selinux/policyvers`;
+    $pol_vers          = `$checkpolicy -V | cut -f 1 -d ' '`;
+    $mod_pol_vers      = `$checkmodule -V | cut -f 2 -d '-'`;
+    $max_kernel_policy = `cat $selinuxfs/policyvers`;
 
     if ( $mod_pol_vers >= 11 and $pol_vers >= 25 and $max_kernel_policy >= 25 )
     {

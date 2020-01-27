@@ -1,6 +1,10 @@
-INCLUDEDIR ?= /usr/include
-POLDEV ?= /usr/share/selinux/devel
-SELINUXFS ?= /sys/fs/selinux
+PREFIX ?= /usr
+BINDIR ?= $(PREFIX)/bin
+INCLUDEDIR ?= $(PREFIX)/include
+POLDEV ?= $(PREFIX)/share/selinux/devel
+export SELINUXFS ?= /sys/fs/selinux
+export CHECKPOLICY = $(BINDIR)/checkpolicy
+export CHECKMODULE = $(BINDIR)/checkmodule
 
 export CFLAGS+=-g -O0 -Wall -D_GNU_SOURCE
 
