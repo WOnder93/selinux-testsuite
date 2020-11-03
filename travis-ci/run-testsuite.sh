@@ -41,6 +41,7 @@ dnf install -y \
     e2fsprogs \
     jfsutils \
     dosfstools \
+    btrfs-progs \
     kernel-devel-"$(uname -r)" \
     kernel-modules-"$(uname -r)"
 

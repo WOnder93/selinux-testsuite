@@ -61,6 +61,7 @@ similar dependencies):
 * e2fsprogs _(used by the ext4 filesystem tests)_
 * jfsutils _(used by the jfs filesystem tests)_
 * dosfstools _(used by the vfat filesystem tests)_
+* btrfs-progs _(used by the btrfs filesystem tests)_
 * nftables _(used by inet_socket and sctp tests if ver >= 9.3 for secmark testing )_
 
 On a modern Fedora system you can install these dependencies with the
@@ -87,6 +88,7 @@ following command (NOTE: On Fedora 32 and below you need to remove
 		e2fsprogs \
 		jfsutils \
 		dosfstools \
+		btrfs-progs \
 		nftables \
 		kernel-devel-$(uname -r) \
 		kernel-modules-$(uname -r)
@@ -134,6 +136,7 @@ command:
 		e2fsprogs \
 		jfsutils \
 		dosfstools \
+		btrfs-progs \
 		nftables
 
 On Debian, you need to build and install netlabel_tools manually since

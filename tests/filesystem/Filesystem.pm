@@ -122,10 +122,18 @@ sub attach_dev {
 
 sub make_fs {
     my ( $mk_type, $mk_dev, $mk_dir ) = @_;
+
+    # BTRFS requires a larger minimum size that takes >2x longer to generate
+    if ( $mk_type eq "btrfs" ) {
+        $count = "28000";
+    }
+    else {
+        $count = "4096";
+    }
     print "Create $mk_dir/fstest with dd\n";
     $result =
       system(
-        "dd if=/dev/zero of=$mk_dir/fstest bs=4096 count=4096 2>/dev/null");
+        "dd if=/dev/zero of=$mk_dir/fstest bs=4096 count=$count 2>/dev/null");
     if ( $result != 0 ) {
         print "dd failed to create $mk_dir/fstest\n";
     }
