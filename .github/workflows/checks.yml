@@ -44,6 +44,7 @@ jobs:
       - name: Create a Vagrant VM
         run: |
           image="$(.github/workflows/download-rawhide-image.sh /tmp)"
-          IMG_URL="fle://$image" vagrant up
+          vagrant box add rawhide "file://$image"
+          IMAGE_NAME=rawhide vagrant up
       - name: Run SELinux testsuite
         run: vagrant ssh -- sudo make -C /root/testsuite test
