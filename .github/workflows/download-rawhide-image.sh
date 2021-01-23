@@ -19,4 +19,4 @@ fi
 
 shasum -a 256 --status --ignore-missing -c ./*-CHECKSUM
 
-echo "$(realpath "$latest_image")"
+echo "$PWD/$latest_image"
