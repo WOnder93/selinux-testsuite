@@ -20,7 +20,11 @@
 # backwards compatibility). Please don't change it unless you know what
 # you're doing.
 Vagrant.configure("2") do |config|
-  config.vm.box = "fedora/#{ENV['FEDORA_VERSION']}-cloud-base"
+  if ENV.has_key?('IMAGE_URL')
+    config.vm.box = "fedora/#{ENV['FEDORA_VERSION'] || '33'}-cloud-base"
+  else
+    config.vm.box_url = ENV['IMAGE_URL']
+  end
   config.vm.synced_folder ".", "/vagrant", disabled: true
   config.vm.synced_folder ".", "/root/testsuite", type: "rsync",
     # need to disable '--copy-links', which is in rsync__args by default
