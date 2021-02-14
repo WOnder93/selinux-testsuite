@@ -16,5 +16,7 @@ jobs:
           image="$(.github/workflows/download-rawhide-image.sh /tmp)"
           vagrant box add rawhide "file://$image"
           IMAGE_NAME=rawhide vagrant up
+      - name: lscpu
+        run: vagrant ssh -- lscpu
       - name: Run SELinux testsuite
         run: vagrant ssh -- sudo make -C /root/testsuite test
