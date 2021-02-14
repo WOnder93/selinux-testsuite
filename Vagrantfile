@@ -28,6 +28,7 @@ Vagrant.configure("2") do |config|
 
   config.vm.provider "virtualbox" do |v|
     v.memory = 4096
+    v.customize ["modifyvm", :id, "--nested-hw-virt", "on"]
   end
   config.vm.provider "libvirt" do |v|
     v.memory = 4096
