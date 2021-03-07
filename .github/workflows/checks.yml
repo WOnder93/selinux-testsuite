@@ -13,12 +13,13 @@ jobs:
     runs-on: macos-latest
     strategy:
       matrix:
-        env:
-          - { version: 33, secnext: 0 }
-          - { version: 33, secnext: 1 }
+        fedora_version: [33]
+        secnext: [0, 1]
+        mls: [0, 1]
     env:
-      FEDORA_VERSION: ${{ matrix.env.version }}
-      KERNEL_SECNEXT: ${{ matrix.env.secnext }}
+      FEDORA_VERSION: ${{ matrix.fedora_version }}
+      KERNEL_SECNEXT: ${{ matrix.secnext }}
+      MLS: ${{ matrix.mls }}
     steps:
       - uses: actions/checkout@v2
       # macOS sometimes allows symlinks to have permissions other than 777,
@@ -29,5 +30,7 @@ jobs:
         run: find . -type link -exec chmod -h 777 \{\} \;
       - name: Create a Vagrant VM
         run: vagrant up
+      - name: Check SELinux login context
+        run: vagrant ssh -- id -Z
       - name: Run SELinux testsuite
-        run: vagrant ssh -- sudo make -C /root/testsuite test
+        run: vagrant ssh -- make -C /root/testsuite test

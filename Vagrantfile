@@ -33,6 +33,10 @@ Vagrant.configure("2") do |config|
     v.memory = 4096
   end
 
+  config.ssh.username = "root"
+
+  reboot_cmd = ''
+
   if ENV['KERNEL_SECNEXT'] == '1'
     dnf_opts = '--nogpgcheck --releasever rawhide --repofrompath kernel-secnext,https://repo.paul-moore.com/rawhide/x86_64'
     kernel_pkgs = 'kernel-devel kernel-modules'
@@ -40,7 +44,21 @@ Vagrant.configure("2") do |config|
   else
     dnf_opts = ''
     kernel_pkgs = 'kernel-devel-"$(uname -r)" kernel-modules-"$(uname -r)"'
-    reboot_cmd = ''
+  end
+
+  if ENV['MLS'] == '1'
+    mls_pkgs = 'selinux-policy-mls policycoreutils-python-utils'
+    mls_setup_cmd = <<SCRIPT
+      semanage boolean -S mls --modify --on ssh_sysadm_login
+      semanage login -S mls --modify -s sysadm_u root
+      setenforce 0
+      { echo SELINUXTYPE=mls; echo SELINUX=permissive; } >/etc/selinux/config
+      restorecon -Fr -e /dev -e /tmp -e /run -e /var/run -e /sys -e /proc /
+SCRIPT
+    reboot_cmd = 'reboot'
+  else
+    mls_pkgs = ''
+    mls_setup_cmd = ''
   end
 
   config.vm.provision :shell, inline: <<SCRIPT
@@ -69,7 +87,9 @@ Vagrant.configure("2") do |config|
       e2fsprogs \
       jfsutils \
       dosfstools \
-      #{kernel_pkgs}
+      #{kernel_pkgs} \
+      #{mls_pkgs}
+    #{mls_setup_cmd}
     #{reboot_cmd}
 SCRIPT
 end
