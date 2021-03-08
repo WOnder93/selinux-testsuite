@@ -69,6 +69,7 @@ Vagrant.configure("2") do |config|
       e2fsprogs \
       jfsutils \
       dosfstools \
+      nfs-utils \
       #{kernel_pkgs}
     #{reboot_cmd}
 SCRIPT
