@@ -21,6 +21,7 @@ optional_policy(`
 	allow testsuite_domain unconfined_t:fd use;
 	allow testsuite_domain unconfined_t:fifo_file { read write ioctl getattr };
 	allow testsuite_domain unconfined_t:process { sigchld };
+	dontaudit unconfined_t testsuite_domain:process { noatsecure rlimitinh siginh };
 ')
 
 gen_require(`

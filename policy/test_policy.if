@@ -60,7 +60,6 @@ interface(`testsuite_domain_type_minimal',`
 	dontaudit $1 security_t:filesystem getattr;
 	dontaudit $1 self:file getattr;
 	dontaudit $1 setrans_var_run_t:dir search;
-	dontaudit unconfined_t $1:process { noatsecure rlimitinh siginh };
 ')
 
 # Workarounds for refpolicy:
