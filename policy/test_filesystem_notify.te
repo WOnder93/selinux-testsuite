@@ -16,7 +16,6 @@ allow test_filesystem_t dosfs_t:filesystem { watch };
 #
 ############### Rules for NFS mount with rootcontext option #################
 #
-userdom_search_user_home_content(filesystemdomain)
 allow test_filesystem_no_watch_mount_t nfs_t:filesystem { unmount };
 allow test_filesystem_no_watch_mount_t test_filesystem_file_t:dir { search };
 allow test_filesystem_no_watch_sb_t nfs_t:filesystem { unmount watch };
@@ -43,7 +42,6 @@ allow test_filesystem_t test_filesystem_file_t:filesystem { watch };
 # hooks.c selinux_path_notify() FILESYSTEM__WATCH
 type test_filesystem_no_watch_t;
 domain_type(test_filesystem_no_watch_t)
-unconfined_runs_test(test_filesystem_no_watch_t)
 typeattribute test_filesystem_no_watch_t testdomain;
 typeattribute test_filesystem_no_watch_t filesystemdomain;
 
@@ -58,7 +56,6 @@ fs_associate(test_filesystem_no_watch_t)
 # hooks.c selinux_path_notify() FILE__WATCH_SB
 type test_filesystem_no_watch_sb_t;
 domain_type(test_filesystem_no_watch_sb_t)
-unconfined_runs_test(test_filesystem_no_watch_sb_t)
 typeattribute test_filesystem_no_watch_sb_t testdomain;
 typeattribute test_filesystem_no_watch_sb_t filesystemdomain;
 
@@ -74,7 +71,6 @@ fs_associate(test_filesystem_no_watch_sb_t)
 # hooks.c selinux_path_notify() FILE__WATCH_MOUNT
 type test_filesystem_no_watch_mount_t;
 domain_type(test_filesystem_no_watch_mount_t)
-unconfined_runs_test(test_filesystem_no_watch_mount_t)
 typeattribute test_filesystem_no_watch_mount_t testdomain;
 typeattribute test_filesystem_no_watch_mount_t filesystemdomain;
 
@@ -85,3 +81,7 @@ allow test_filesystem_no_watch_mount_t test_file_t:dir { mounton read write remo
 fs_mount_all_fs(test_filesystem_no_watch_mount_t)
 fs_relabelfrom_all_fs(test_filesystem_no_watch_mount_t)
 fs_associate(test_filesystem_no_watch_mount_t)
+
+# Common rules for all filesystem domains
+testsuite_domain_transition(filesystemdomain)
+userdom_search_user_home_content(filesystemdomain)

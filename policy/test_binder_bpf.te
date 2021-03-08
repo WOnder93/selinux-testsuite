@@ -7,7 +7,6 @@ attribute binderbpfdomain;
 #
 type test_binder_bpf_mgr_t;
 domain_type(test_binder_bpf_mgr_t)
-unconfined_runs_test(test_binder_bpf_mgr_t)
 typeattribute test_binder_bpf_mgr_t testdomain;
 typeattribute test_binder_bpf_mgr_t binderdomain;
 allow test_binder_bpf_mgr_t test_binder_bpf_client_t:binder { transfer };
@@ -23,7 +22,6 @@ allow test_binder_bpf_mgr_t test_file_t:fifo_file { rw_file_perms };
 #
 type test_binder_bpf_provider_t;
 domain_type(test_binder_bpf_provider_t)
-unconfined_runs_test(test_binder_bpf_provider_t)
 typeattribute test_binder_bpf_provider_t testdomain;
 typeattribute test_binder_bpf_provider_t binderbpfdomain;
 allow test_binder_bpf_provider_t test_binder_bpf_mgr_t:binder { call transfer };
@@ -41,7 +39,6 @@ allow test_binder_bpf_provider_t self:process { setrlimit };
 #
 type test_binder_bpf_client_t;
 domain_type(test_binder_bpf_client_t)
-unconfined_runs_test(test_binder_bpf_client_t)
 typeattribute test_binder_bpf_client_t testdomain;
 typeattribute test_binder_bpf_client_t binderbpfdomain;
 allow test_binder_bpf_client_t test_binder_bpf_provider_t:binder { call impersonate };
@@ -57,7 +54,6 @@ allow test_binder_bpf_client_t test_binder_bpf_provider_t:bpf { map_read map_wri
 #
 type test_binder_client_no_bpf_perm_t;
 domain_type(test_binder_client_no_bpf_perm_t)
-unconfined_runs_test(test_binder_client_no_bpf_perm_t)
 typeattribute test_binder_client_no_bpf_perm_t testdomain;
 typeattribute test_binder_client_no_bpf_perm_t binderbpfdomain;
 allow test_binder_client_no_bpf_perm_t test_binder_bpf_provider_t:binder { call impersonate };
@@ -70,4 +66,4 @@ allow_map(test_binder_client_no_bpf_perm_t, device_t, chr_file)
 ########### Allow these domains to be entered from sysadm domain ############
 #
 miscfiles_domain_entry_test_files(binderbpfdomain)
-userdom_sysadm_entry_spec_domtrans_to(binderbpfdomain)
+testsuite_domain_transition(binderbpfdomain)

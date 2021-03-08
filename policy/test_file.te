@@ -8,7 +8,6 @@ attribute fileopdomain;
 # Domain for process that is allowed to perform operations.
 type test_fileop_t;
 domain_type(test_fileop_t)
-unconfined_runs_test(test_fileop_t)
 domain_obj_id_change_exemption(test_fileop_t)
 typeattribute test_fileop_t fileopdomain;
 typeattribute test_fileop_t testdomain;
@@ -16,7 +15,6 @@ typeattribute test_fileop_t testdomain;
 # Domain for process that is not allowed to perform all operations.
 type test_nofileop_t;
 domain_type(test_nofileop_t)
-unconfined_runs_test(test_nofileop_t)
 domain_obj_id_change_exemption(test_nofileop_t)
 typeattribute test_nofileop_t fileopdomain;
 typeattribute test_nofileop_t testdomain;
@@ -38,7 +36,6 @@ files_type(fileop_exec_t)
 # Domain for running certain executables
 type fileop_t;
 domain_type(fileop_t)
-unconfined_runs_test(fileop_t)
 typeattribute fileop_t fileopdomain;
 typeattribute fileop_t testdomain;
 read_files_pattern(fileop_t, fileop_exec_t, fileop_exec_t)
@@ -61,7 +58,7 @@ libs_exec_lib_files(fileopdomain)
 
 # Allow all of these domains to be entered from sysadm domain
 miscfiles_domain_entry_test_files(fileopdomain)
-userdom_sysadm_entry_spec_domtrans_to(fileopdomain)
+testsuite_domain_transition(fileopdomain)
 
 corecmd_bin_entry_type(fileopdomain)
 sysadm_bin_spec_domtrans_to(fileopdomain)

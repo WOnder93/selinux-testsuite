@@ -16,7 +16,6 @@ define(`netlink_socket_test', `
 # Domain that is allowed to create $1_socket.
 type test_$1_t;
 domain_type(test_$1_t)
-unconfined_runs_test(test_$1_t)
 typeattribute test_$1_t netlinksocktestdomain;
 typeattribute test_$1_t testdomain;
 
@@ -27,7 +26,6 @@ allow test_$1_t self:$1 create_socket_perms;
 # Domain that is not allowed to create $1.
 type test_no_$1_t;
 domain_type(test_no_$1_t)
-unconfined_runs_test(test_no_$1_t)
 typeattribute test_no_$1_t netlinksocktestdomain;
 typeattribute test_no_$1_t testdomain;
 
@@ -47,7 +45,7 @@ netlink_socket_test(netlink_crypto_socket)
 
 # Entry into the test domains via the test program.
 miscfiles_domain_entry_test_files(netlinksocktestdomain)
-userdom_sysadm_entry_spec_domtrans_to(netlinksocktestdomain)
+testsuite_domain_transition(netlinksocktestdomain)
 
 # Trigger kernel module auto-loading of the protocol implementations.
 kernel_request_load_module(netlinksocktestdomain)

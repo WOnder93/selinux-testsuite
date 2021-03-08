@@ -7,7 +7,6 @@ attribute mac_admintestdomain;
 # Domain that is allowed mac_admin.
 type test_mac_admin_t;
 domain_type(test_mac_admin_t)
-unconfined_runs_test(test_mac_admin_t)
 typeattribute test_mac_admin_t mac_admintestdomain;
 typeattribute test_mac_admin_t testdomain;
 allow test_mac_admin_t self:process { setfscreate };
@@ -24,7 +23,6 @@ allow test_mac_admin_t self:capability2 mac_admin;
 # Domain that is not allowed mac_admin permission.
 type test_no_mac_admin_t;
 domain_type(test_no_mac_admin_t)
-unconfined_runs_test(test_no_mac_admin_t)
 typeattribute test_no_mac_admin_t mac_admintestdomain;
 typeattribute test_no_mac_admin_t testdomain;
 allow test_no_mac_admin_t self:process { setfscreate };
@@ -51,4 +49,4 @@ allow mac_admintestdomain unlabeled_t:dir { getattr create };
 
 # Entry into the test domains via the test program.
 corecmd_bin_entry_type(mac_admintestdomain)
-userdom_sysadm_entry_spec_domtrans_to(mac_admintestdomain)
+testsuite_domain_transition(mac_admintestdomain)

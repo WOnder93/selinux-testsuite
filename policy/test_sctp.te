@@ -51,7 +51,6 @@ allow sctpsocketdomain test_file_t:fifo_file rw_file_perms;
 #
 type test_sctp_server_t;
 domain_type(test_sctp_server_t)
-unconfined_runs_test(test_sctp_server_t)
 typeattribute test_sctp_server_t testdomain;
 typeattribute test_sctp_server_t sctpsocketdomain;
 allow test_sctp_server_t self:sctp_socket create_stream_socket_perms;
@@ -72,7 +71,6 @@ dontaudit test_sctp_server_t self:udp_socket { getattr connect };
 #
 type test_sctp_client_t;
 domain_type(test_sctp_client_t)
-unconfined_runs_test(test_sctp_client_t)
 typeattribute test_sctp_client_t testdomain;
 typeattribute test_sctp_client_t sctpsocketdomain;
 allow test_sctp_client_t self:sctp_socket create_stream_socket_perms;
@@ -87,7 +85,6 @@ corenet_inout_generic_if(test_sctp_client_t)
 #
 type test_sctp_deny_peer_client_t;
 domain_type(test_sctp_deny_peer_client_t)
-unconfined_runs_test(test_sctp_deny_peer_client_t)
 typeattribute test_sctp_deny_peer_client_t testdomain;
 typeattribute test_sctp_deny_peer_client_t sctpsocketdomain;
 allow test_sctp_deny_peer_client_t self:sctp_socket create_stream_socket_perms;
@@ -124,7 +121,6 @@ allow nfsd_t deny_assoc_sctp_peer_t:peer recv;
 #
 type test_sctp_connectx_t;
 domain_type(test_sctp_connectx_t)
-unconfined_runs_test(test_sctp_connectx_t)
 typeattribute test_sctp_connectx_t testdomain;
 typeattribute test_sctp_connectx_t sctpsocketdomain;
 allow test_sctp_connectx_t self:sctp_socket create_stream_socket_perms;
@@ -136,7 +132,6 @@ corenet_inout_generic_node(test_sctp_connectx_t)
 #
 type test_sctp_deny_connectx_t;
 domain_type(test_sctp_deny_connectx_t)
-unconfined_runs_test(test_sctp_deny_connectx_t)
 typeattribute test_sctp_deny_connectx_t testdomain;
 typeattribute test_sctp_deny_connectx_t sctpsocketdomain;
 allow test_sctp_deny_connectx_t self:sctp_socket { create listen accept bind ioctl read getattr write getopt setopt };
@@ -148,7 +143,6 @@ corenet_inout_generic_node(test_sctp_deny_connectx_t)
 #
 type test_sctp_bindx_t;
 domain_type(test_sctp_bindx_t)
-unconfined_runs_test(test_sctp_bindx_t)
 typeattribute test_sctp_bindx_t testdomain;
 typeattribute test_sctp_bindx_t sctpsocketdomain;
 allow test_sctp_bindx_t self:sctp_socket create_stream_socket_perms;
@@ -160,7 +154,6 @@ corenet_inout_generic_node(test_sctp_bindx_t)
 #
 type test_sctp_deny_bindx_t;
 domain_type(test_sctp_deny_bindx_t)
-unconfined_runs_test(test_sctp_deny_bindx_t)
 typeattribute test_sctp_deny_bindx_t testdomain;
 typeattribute test_sctp_deny_bindx_t sctpsocketdomain;
 allow test_sctp_deny_bindx_t self:sctp_socket { create ioctl read getattr write getopt setopt };
@@ -172,7 +165,6 @@ corenet_inout_generic_node(test_sctp_deny_bindx_t)
 #
 type sctp_asconf_params_server_t;
 domain_type(sctp_asconf_params_server_t)
-unconfined_runs_test(sctp_asconf_params_server_t)
 typeattribute sctp_asconf_params_server_t testdomain;
 typeattribute sctp_asconf_params_server_t sctpsocketdomain;
 allow sctp_asconf_params_server_t self:sctp_socket { create listen bind ioctl read getattr write getopt setopt };
@@ -184,7 +176,6 @@ corenet_inout_generic_node(sctp_asconf_params_server_t)
 #
 type sctp_asconf_params_client_t;
 domain_type(sctp_asconf_params_client_t)
-unconfined_runs_test(sctp_asconf_params_client_t)
 typeattribute sctp_asconf_params_client_t testdomain;
 typeattribute sctp_asconf_params_client_t sctpsocketdomain;
 allow sctp_asconf_params_client_t self:sctp_socket { create connect ioctl read getattr write getopt setopt };
@@ -202,7 +193,6 @@ allow sctp_asconf_params_client_t self:sctp_socket { bind };
 #
 type sctp_asconf_deny_pri_addr_client_t;
 domain_type(sctp_asconf_deny_pri_addr_client_t)
-unconfined_runs_test(sctp_asconf_deny_pri_addr_client_t)
 typeattribute sctp_asconf_deny_pri_addr_client_t testdomain;
 typeattribute sctp_asconf_deny_pri_addr_client_t sctpsocketdomain;
 allow sctp_asconf_deny_pri_addr_client_t self:sctp_socket { create connect ioctl read getattr write getopt setopt };
@@ -220,7 +210,6 @@ allow sctp_asconf_params_server_t sctp_asconf_deny_pri_addr_client_t:sctp_socket
 #
 type sctp_asconf_deny_param_add_client_t;
 domain_type(sctp_asconf_deny_param_add_client_t)
-unconfined_runs_test(sctp_asconf_deny_param_add_client_t)
 typeattribute sctp_asconf_deny_param_add_client_t testdomain;
 typeattribute sctp_asconf_deny_param_add_client_t sctpsocketdomain;
 allow sctp_asconf_deny_param_add_client_t self:sctp_socket { create connect ioctl read getattr write getopt setopt };
@@ -256,4 +245,4 @@ allow sctpsocketdomain self:unix_dgram_socket { create ioctl };
 ############ Allow these domains to be entered from sysadm domain ############
 #
 miscfiles_domain_entry_test_files(sctpsocketdomain)
-userdom_sysadm_entry_spec_domtrans_to(sctpsocketdomain)
+testsuite_domain_transition(sctpsocketdomain)

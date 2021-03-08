@@ -7,16 +7,27 @@ policy_module(test_policy,1.0.0)
 #
 
 attribute testdomain;
+attribute testsuite_caller_domain;
 
+# Authorize unconfined_r, sysadm_r, and system_r for the test domains.
 gen_require(`
-	role staff_r;
 	role system_r;
-	role sysadm_r;
+')
+role system_r types testdomain;
+
+optional_policy(`
+	gen_require(`
+		role unconfined_r;
+	')
+	role unconfined_r types testdomain;
 ')
 
-# Authorize sysadm_r and system_r for the test domains.
-role sysadm_r types testdomain;
-role system_r types testdomain;
+optional_policy(`
+	gen_require(`
+		role sysadm_r;
+	')
+	role sysadm_r types testdomain;
+')
 
 # Allow the test domains to access the sysadm terminal.
 # This allows read and write sysadm ttys and ptys.

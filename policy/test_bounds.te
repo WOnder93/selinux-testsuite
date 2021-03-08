@@ -5,8 +5,6 @@
 
 attribute test_bounds_domain;
 attribute test_bounds_child_domain;
-unconfined_runs_test(test_bounds_domain)
-corecmd_bin_entry_type(test_bounds_domain)
 
 # Type for test files
 type test_bounds_file_red_t;
@@ -67,5 +65,6 @@ allow test_bounds_child_domain test_bounds_file_green_t : file { getattr setattr
 allow test_bounds_child_domain test_bounds_file_blue_t : file { getattr setattr };
 
 # Allow all of these domains to be entered from sysadm domain
+corecmd_bin_entry_type(test_bounds_domain)
 miscfiles_domain_entry_test_files(test_bounds_domain)
-sysadm_entry_spec_domtrans(test_bounds_domain)
+testsuite_domain_transition(test_bounds_domain)

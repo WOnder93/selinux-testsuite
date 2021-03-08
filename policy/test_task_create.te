@@ -8,7 +8,6 @@ attribute test_create_d;
 # Domain for process allowed to fork.
 type test_create_yes_t;
 domain_type(test_create_yes_t)
-unconfined_runs_test(test_create_yes_t)
 typeattribute test_create_yes_t test_create_d;
 typeattribute test_create_yes_t testdomain;
 
@@ -22,8 +21,8 @@ type test_create_no_t;
 # Ideally, refpolicy would _not_ grant such permissions to every domain,
 # as it makes the permission effectively unusable in real policy.
 #domain_type(test_create_no_t)
-unconfined_runs_test(test_create_no_t)
 typeattribute test_create_no_t test_create_d;
+typeattribute test_create_no_t testdomain;
 
 allow test_create_no_t self:process ~fork;
 allow test_create_no_t proc_t:dir list_dir_perms;
@@ -50,7 +49,5 @@ allow test_create_no_t privfd:fd use;
 # General rules for the test_create_d
 
 # Allow domain to be entered from the sysadm domain.
-role sysadm_r types test_create_d;
-role system_r types test_create_d;
 miscfiles_domain_entry_test_files(test_create_d)
-userdom_sysadm_entry_spec_domtrans_to(test_create_d)
+testsuite_domain_transition(test_create_d)
