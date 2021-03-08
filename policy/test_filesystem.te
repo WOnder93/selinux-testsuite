@@ -127,7 +127,6 @@ fs_getattr_xattr_fs(test_filesystem_may_create_no_associate_t)
 # Create test file
 # neverallow unlabeled_t test_filesystem_may_create_no_associate_t:filesystem { associate };
 allow test_filesystem_may_create_no_associate_t self:file { create relabelfrom relabelto };
-allow test_filesystem_may_create_no_associate_t unconfined_t:file { open read write };
 allow test_filesystem_may_create_no_associate_t unlabeled_t:dir { add_name search write };
 allow test_filesystem_may_create_no_associate_t unlabeled_t:file { create open relabelfrom write };
 
