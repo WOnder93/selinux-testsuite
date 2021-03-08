@@ -27,5 +27,5 @@ typeattribute test_noreadlink_t testdomain;
 allow test_noreadlink_t test_readlink_file_t:file { getattr read };
 allow test_noreadlink_t test_readlink_link_t:lnk_file { getattr };
 
-# FIXME corecmd_something() ???
+corecmd_bin_entry_type(test_readlink_domain)
 testsuite_domain_transition(test_readlink_domain)
