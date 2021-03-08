@@ -60,6 +60,40 @@ interface(`userdom_sysadm_entry_spec_domtrans_to',`
 ')
 ')
 
+interface(`testsuite_domain_type_common',`
+	gen_require(`
+		attribute testsuite_domain;
+	')
+
+	typeattribute $1 testsuite_domain;
+')
+
+interface(`testsuite_domain_type',`
+	domain_type($1)
+	testsuite_domain_type_common($1)
+
+	# task_create and task_setpgid need to exclude these permissions
+	allow $1 self:process { fork setpgid };
+')
+
+interface(`testsuite_domain_type_minimal',`
+	gen_require(`
+		type setrans_var_run_t, syslogd_t;
+	')
+
+	testsuite_domain_type_common($1)
+
+	allow $1 proc_t:dir { search };
+	allow $1 proc_t:lnk_file { read };
+	allow $1 self:dir { search };
+	allow $1 self:file { open read write };
+	dontaudit init_t syslogd_t:fd use;
+	dontaudit $1 security_t:filesystem getattr;
+	dontaudit $1 self:file getattr;
+	dontaudit $1 setrans_var_run_t:dir search;
+	dontaudit unconfined_t $1:process { noatsecure rlimitinh siginh };
+')
+
 # Workarounds for refpolicy:
 
 ifdef(`dev_rw_infiniband_dev', `', ` dnl
