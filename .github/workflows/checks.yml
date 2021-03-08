@@ -37,6 +37,7 @@ jobs:
       #  run: vagrant ssh -- sudo make -C /root/testsuite/tests test
       - name: Run NFS test
         run: vagrant ssh -- sudo env -C /root/testsuite ./tools/nfs.sh nfs_filesystem
+        continue-on-error: true
       - name: Show AVC records
         run: vagrant ssh -- sudo ausearch -i -m AVC
       - name: Unload testsuite policy
