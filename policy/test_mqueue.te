@@ -57,7 +57,6 @@ files_type(mqop_mqrw_t)
 
 # basic permision for all mqopdomains
 miscfiles_domain_entry_test_files(mqopdomain)
-userdom_sysadm_entry_spec_domtrans_to(mqopdomain)
 
 corecmd_bin_entry_type(mqopdomain)
 sysadm_bin_spec_domtrans_to(mqopdomain)
