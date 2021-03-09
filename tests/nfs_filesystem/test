@@ -100,6 +100,13 @@ while ( $i < 2 ) {
     );
     ok( $result eq 0, $test_msg );
 
+    system("exportfs 1>&2");
+    system("mount 1>&2");
+    system("ls -lZ $target 1>&2");
+    system("ls -lZd $target 1>&2");
+    system("ls -lZd $target/tests/nfs_filesystem/mntpoint/mp1 1>&2");
+    system("ls -lZd $basedir/mntpoint/mp1 1>&2");
+
     # First mount(2) ok, second currently fails with EBUSY
     $result = system(
 "runcon -t test_filesystem_t $mount_cmd $v -s $dev -t $target -f $fs_type -o $mount_opts 2>&1"
@@ -111,11 +118,8 @@ while ( $i < 2 ) {
         ok( $result eq 0 );
     }
 
-    system("ls -lZ $target 1>&2");
-    system("ls -lZd $target 1>&2");
-    system("ls -lZd $target/tests/nfs_filesystem/mntpoint/mp1 1>&2");
-    system("ls -lZd $basedir/mntpoint/mp1 1>&2");
-    sleep(40);
+    system("exportfs 1>&2");
+    system("mount 1>&2");
     system("ls -lZ $target 1>&2");
     system("ls -lZd $target 1>&2");
     system("ls -lZd $target/tests/nfs_filesystem/mntpoint/mp1 1>&2");
