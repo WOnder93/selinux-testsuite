@@ -113,6 +113,15 @@ while ( $i < 2 ) {
 
     system("ls -lZd $target/tests/nfs_filesystem/mntpoint/mp1 1>&2");
     system("ls -lZd $basedir/mntpoint/mp1 1>&2");
+    sleep(20);
+    system("ls -lZd $target/tests/nfs_filesystem/mntpoint/mp1 1>&2");
+    system("ls -lZd $basedir/mntpoint/mp1 1>&2");
+    sleep(20);
+    system("ls -lZd $target/tests/nfs_filesystem/mntpoint/mp1 1>&2");
+    system("ls -lZd $basedir/mntpoint/mp1 1>&2");
+    sleep(20);
+    system("ls -lZd $target/tests/nfs_filesystem/mntpoint/mp1 1>&2");
+    system("ls -lZd $basedir/mntpoint/mp1 1>&2");
 
     # Create file and change context via type_transition rule, check ok:
     $result = system(
