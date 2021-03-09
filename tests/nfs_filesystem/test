@@ -111,6 +111,8 @@ while ( $i < 2 ) {
         ok( $result eq 0 );
     }
 
+    sleep(5); # work around temporary unlabeled_t
+
     # Create file and change context via type_transition rule, check ok:
     $result = system(
 "runcon -t test_filesystem_t $filesystem_dir/create_file -f $target/tests/nfs_filesystem/mntpoint/mp1/test_file -e test_filesystem_filetranscon_t $v"
