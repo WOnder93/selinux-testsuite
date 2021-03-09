@@ -29,10 +29,10 @@ jobs:
         run: find . -type link -exec chmod -h 777 \{\} \;
       - name: Create a Vagrant VM
         run: vagrant up
-      - name: Clear audit log
+      - name: Install strace
         run: vagrant ssh -- sudo dnf install -y strace
-      - name: Clear audit log
-        run: vagrant ssh -- sudo tee /var/log/audit/audit.log </dev/null
+      #- name: Clear audit log
+      #  run: vagrant ssh -- sudo tee /var/log/audit/audit.log </dev/null
       - name: Load testsuite policy
         run: vagrant ssh -- sudo make -C /root/testsuite/policy load
       #- name: Run SELinux testsuite
