@@ -162,9 +162,9 @@ all:
 		(cd $$subdir && $(MAKE) $@) || exit 1; \
 	done
 	chmod +x */test
+	chcon -R -t test_file_t .
 
 test: all
-	chcon -R -t test_file_t .
 	@SUBDIRS="$(SUBDIRS)" PATH=/usr/bin:/bin:/usr/sbin:/sbin ./runtests.pl
 
 clean:
