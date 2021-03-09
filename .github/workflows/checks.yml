@@ -29,8 +29,6 @@ jobs:
         run: find . -type link -exec chmod -h 777 \{\} \;
       - name: Create a Vagrant VM
         run: vagrant up
-      - name: Install strace
-        run: vagrant ssh -- sudo dnf install -y strace
       - name: Build the testsuite
         run: vagrant ssh -- sudo make -C /root/testsuite all
       #- name: Clear audit log
@@ -43,6 +41,6 @@ jobs:
         run: vagrant ssh -- sudo env -C /root/testsuite ./tools/nfs.sh nfs_filesystem
         continue-on-error: true
       - name: Show AVC records
-        run: vagrant ssh -- sudo ausearch -i -m AVC
+        run: vagrant ssh -- sudo ausearch --input-logs -i -m AVC
       - name: Unload testsuite policy
         run: vagrant ssh -- sudo make -C /root/testsuite/policy unload
