@@ -31,6 +31,8 @@ jobs:
         run: vagrant up
       - name: Install strace
         run: vagrant ssh -- sudo dnf install -y strace
+      - name: Build the testsuite
+        run: vagrant ssh -- sudo make -C /root/testsuite all
       #- name: Clear audit log
       #  run: vagrant ssh -- sudo tee /var/log/audit/audit.log </dev/null
       - name: Load testsuite policy
