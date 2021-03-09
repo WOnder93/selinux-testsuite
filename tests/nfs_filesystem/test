@@ -60,7 +60,7 @@ while ( $i < 2 ) {
     # Setting MP to unlabeled_t
     $result =
       system(
-"runcon -t test_filesystem_t $filesystem_dir/check_mount_context -r -m $basedir/mntpoint/mp1 $v"
+"strace runcon -t test_filesystem_t $filesystem_dir/check_mount_context -r -m $basedir/mntpoint/mp1 $v"
       );
     ok( $result eq 0 );
 
