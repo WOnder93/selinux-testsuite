@@ -41,7 +41,13 @@ CIL_TARGETS = test_mlsconstrain.cil test_overlay_defaultrange.cil
 ifeq ($(shell [ $(MOD_POL_VERS) -ge 18 -a $(MAX_KERNEL_POLICY) -ge 30 ] && echo true),true)
 CIL_TARGETS += test_userfaultfd.cil
 TARGETS += test_userfaultfd.te
-endif
+ifeq ($(shell cat $(SELINUXFS)/policy_capabilities/extended_anon_inode_class \
+	2>/dev/null || echo 0),1)
+CIL_TARGETS += test_anon_inode_extended.cil
+else
+CIL_TARGETS += test_anon_inode_legacy.cil
+endif # policy_capabilities/extended_anon_inode_class
+endif # extended permissions
 ifeq ($(shell [ $(MAX_KERNEL_POLICY) -ge 32 ] && echo true),true)
 ifeq ($(shell [ $(POL_VERS) -ge 32 ] && echo true),true)
 # If other MLS tests get written this can be moved outside of the glblub test

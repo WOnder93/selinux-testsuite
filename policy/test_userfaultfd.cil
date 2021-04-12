@@ -1,52 +1,76 @@
-; Define new class anon_inode
-(class anon_inode ())
-(classcommon anon_inode file)
-(classorder (unordered anon_inode))
+(macro build_uffd_policy ((class uffd_class))
+	; Allow all anonymous inodes
+	(typeattributeset cil_gen_require test_notransition_uffd_t)
+	(allow test_notransition_uffd_t self (uffd_class (create getattr ioctl read)))
 
-; Allow all anonymous inodes
-(typeattributeset cil_gen_require test_notransition_uffd_t)
-(allow test_notransition_uffd_t self (anon_inode (create getattr ioctl read)))
+	(typeattributeset cil_gen_require uffd_t)
 
-(typeattributeset cil_gen_require uffd_t)
+	; Allow all operations on UFFD
+	(typeattributeset cil_gen_require test_uffd_t)
+	(call uffd_transition (test_uffd_t uffd_t))
+	(allow test_uffd_t uffd_t (uffd_class (create getattr ioctl read)))
 
-; Allow all operations on UFFD
-(typeattributeset cil_gen_require test_uffd_t)
-(typetransition test_uffd_t test_uffd_t anon_inode "[userfaultfd]" uffd_t)
-(allow test_uffd_t uffd_t (anon_inode (create getattr ioctl read)))
+	; Don't allow any operation on UFFD
+	(typeattributeset cil_gen_require test_nocreate_uffd_t)
+	(call uffd_transition (test_nocreate_uffd_t uffd_t))
 
-; Don't allow any operation on UFFD
-(typeattributeset cil_gen_require test_nocreate_uffd_t)
-(typetransition test_nocreate_uffd_t test_nocreate_uffd_t anon_inode "[userfaultfd]" uffd_t)
+	; Don't allow getattr operation on UFFD
+	(typeattributeset cil_gen_require test_nogetattr_uffd_t)
+	(call uffd_transition (test_nogetattr_uffd_t uffd_t))
+	(allow test_nogetattr_uffd_t uffd_t (uffd_class (create)))
 
-; Don't allow getattr operation on UFFD
-(typeattributeset cil_gen_require test_nogetattr_uffd_t)
-(typetransition test_nogetattr_uffd_t test_nogetattr_uffd_t anon_inode "[userfaultfd]" uffd_t)
-(allow test_nogetattr_uffd_t uffd_t (anon_inode (create)))
+	; Don't allow any ioctl operation on UFFD
+	(typeattributeset cil_gen_require test_noioctl_uffd_t)
+	(call uffd_transition (test_noioctl_uffd_t uffd_t))
+	(allow test_noioctl_uffd_t uffd_t (uffd_class (create getattr)))
 
-; Don't allow any ioctl operation on UFFD
-(typeattributeset cil_gen_require test_noioctl_uffd_t)
-(typetransition test_noioctl_uffd_t test_noioctl_uffd_t anon_inode "[userfaultfd]" uffd_t)
-(allow test_noioctl_uffd_t uffd_t (anon_inode (create getattr)))
+	; Only allow UFFDIO_API ioctl
+	(typeattributeset cil_gen_require test_api_ioctl_uffd_t)
+	(call uffd_transition (test_api_ioctl_uffd_t uffd_t))
+	(allow test_api_ioctl_uffd_t uffd_t (uffd_class (create getattr ioctl read)))
+	(allowx test_api_ioctl_uffd_t uffd_t (ioctl uffd_class ((0xaa3f))))
 
-; Only allow UFFDIO_API ioctl
-(typeattributeset cil_gen_require test_api_ioctl_uffd_t)
-(typetransition test_api_ioctl_uffd_t test_api_ioctl_uffd_t anon_inode "[userfaultfd]" uffd_t)
-(allow test_api_ioctl_uffd_t uffd_t (anon_inode (create getattr ioctl read)))
-(allowx test_api_ioctl_uffd_t uffd_t (ioctl anon_inode ((0xaa3f))))
+	; Only allow UFFDIO_API and UFFDIO_REGISTER ioctls
+	(typeattributeset cil_gen_require test_register_ioctl_uffd_t)
+	(call uffd_transition (test_register_ioctl_uffd_t uffd_t))
+	(allow test_register_ioctl_uffd_t uffd_t (uffd_class (create getattr ioctl read)))
+	(allowx test_register_ioctl_uffd_t uffd_t (ioctl uffd_class ((0xaa3f 0xaa00))))
 
-; Only allow UFFDIO_API and UFFDIO_REGISTER ioctls
-(typeattributeset cil_gen_require test_register_ioctl_uffd_t)
-(typetransition test_register_ioctl_uffd_t test_register_ioctl_uffd_t anon_inode "[userfaultfd]" uffd_t)
-(allow test_register_ioctl_uffd_t uffd_t (anon_inode (create getattr ioctl read)))
-(allowx test_register_ioctl_uffd_t uffd_t (ioctl anon_inode ((0xaa3f 0xaa00))))
+	; Only allow UFFDIO_API, UFFDIO_REGISTER and UFFDIO_COPY ioctls, which are most used.
+	(typeattributeset cil_gen_require test_copy_ioctl_uffd_t)
+	(call uffd_transition (test_copy_ioctl_uffd_t uffd_t))
+	(allow test_copy_ioctl_uffd_t uffd_t (uffd_class (create getattr ioctl read)))
+	(allowx test_copy_ioctl_uffd_t uffd_t (ioctl uffd_class ((0xaa3f 0xaa00 0xaa03))))
 
-; Only allow UFFDIO_API, UFFDIO_REGISTER and UFFDIO_COPY ioctls, which are most used.
-(typeattributeset cil_gen_require test_copy_ioctl_uffd_t)
-(typetransition test_copy_ioctl_uffd_t test_copy_ioctl_uffd_t anon_inode "[userfaultfd]" uffd_t)
-(allow test_copy_ioctl_uffd_t uffd_t (anon_inode (create getattr ioctl read)))
-(allowx test_copy_ioctl_uffd_t uffd_t (ioctl anon_inode ((0xaa3f 0xaa00 0xaa03))))
+	; Don't allow read operation on UFFD.
+	(typeattributeset cil_gen_require test_noread_uffd_t)
+	(call uffd_transition (test_noread_uffd_t uffd_t))
+	(allow test_noread_uffd_t uffd_t (uffd_class (create getattr ioctl)))
+)
 
-; Don't allow read operation on UFFD.
-(typeattributeset cil_gen_require test_noread_uffd_t)
-(typetransition test_noread_uffd_t test_noread_uffd_t anon_inode "[userfaultfd]" uffd_t)
-(allow test_noread_uffd_t uffd_t (anon_inode (create getattr ioctl)))
+(tunableif extended_anon_inode
+	(true
+		; Extended anon_inode support - use the userfaultfd class
+		(class userfaultfd ())
+		(classcommon userfaultfd file)
+		(classorder (unordered userfaultfd))
+
+		(macro uffd_transition ((type S) (type T))
+			(typetransition S S userfaultfd T)
+		)
+		(call build_uffd_policy (userfaultfd))
+	)
+	(false
+		; Legacy anon_inode support - use the anon_inode class
+		; + named transition
+		(class anon_inode ())
+		(classcommon anon_inode file)
+		(classorder (unordered anon_inode))
+
+		(macro uffd_transition ((type S) (type T))
+			(typetransition S S anon_inode "[userfaultfd]" T)
+		)
+		(call build_uffd_policy (anon_inode))
+	)
+)
+
