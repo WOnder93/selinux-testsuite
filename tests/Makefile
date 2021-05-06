@@ -65,7 +65,9 @@ endif
 endif
 
 ifeq ($(shell grep -q all_key_perms $(POLDEV)/include/support/all_perms.spt && echo true),true)
+ifeq ($(shell grep -q KEYCTL_DH_COMPUTE $(INCLUDEDIR)/linux/keyctl.h && echo true),true)
 SUBDIRS += keys
+endif
 endif
 
 ifeq ($(shell grep -q key_socket $(POLDEV)/include/support/all_perms.spt && test -e $(INCLUDEDIR)/keyutils.h && echo true),true)
