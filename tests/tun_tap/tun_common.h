@@ -12,6 +12,17 @@
 #include <selinux/selinux.h>
 #include <selinux/context.h>
 
+/* These may not be defined on old systems */
+#ifndef IFF_NAPI
+#define IFF_NAPI 0x0010
+#endif
+#ifndef IFF_NAPI_FRAGS
+#define IFF_NAPI_FRAGS 0x0020
+#endif
+#ifndef IFF_NO_PI
+#define IFF_NO_PI 0x1000
+#endif
+
 extern int open_dev(int *fd, char *test_str, bool verbose);
 extern int setiff(int fd, struct ifreq *ifr, bool verbose);
 /* Persistent state 'op': 0 = unset, 1 = set */
