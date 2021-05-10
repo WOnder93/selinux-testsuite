@@ -33,22 +33,25 @@ Vagrant.configure("2") do |config|
     v.memory = 4096
   end
 
+  kernel_subpkgs = ['devel', 'modules']
+
   dnf_opts = ''
   case ENV['IMAGE_NAME']
   when /^centos\//
     dnf_opts << ' --enablerepo powertools'
+    kernel_subpkgs << 'modules-extra'
   end
 
   case ENV['KERNEL_TYPE']
   when 'default'
-    kernel_pkgs = 'kernel-devel-"$(uname -r)" kernel-modules-"$(uname -r)"'
+    kernel_pkgs = kernel_subpkgs.map{|s| "kernel-#{s}-\"$(uname -r)\""}.join(' ')
     reboot_cmd = ''
   when 'latest'
-    kernel_pkgs = 'kernel-devel kernel-modules'
+    kernel_pkgs = kernel_subpkgs.map{|s| "kernel-#{s}"}.join(' ')
     reboot_cmd = 'reboot'
   when 'secnext'
     dnf_opts << ' --nogpgcheck --releasever rawhide --repofrompath kernel-secnext,https://repo.paul-moore.com/rawhide/x86_64'
-    kernel_pkgs = 'kernel-devel kernel-modules'
+    kernel_pkgs = kernel_subpkgs.map{|s| "kernel-#{s}"}.join(' ')
     reboot_cmd = 'reboot'
   else
     print("Invalid KERNEL_TYPE '#{ENV['KERNEL_TYPE']}'")
