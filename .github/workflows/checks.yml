@@ -14,11 +14,12 @@ jobs:
     strategy:
       matrix:
         env:
-          - { version: 33, kernel: latest }
-          - { version: 34, kernel: default }
-          - { version: 34, kernel: secnext }
+          - { image: fedora/33-cloud-base, kernel: latest }
+          - { image: fedora/34-cloud-base, kernel: default }
+          - { image: fedora/34-cloud-base, kernel: secnext }
+          - { image: centos/stream8, kernel: default }
     env:
-      FEDORA_VERSION: ${{ matrix.env.version }}
+      IMAGE_NAME: ${{ matrix.env.image }}
       KERNEL_TYPE: ${{ matrix.env.kernel }}
     steps:
       - uses: actions/checkout@v2
