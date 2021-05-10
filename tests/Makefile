@@ -166,6 +166,7 @@ all:
 	chmod +x */test
 
 test: all
+	modprobe sctp
 	chcon -R -t test_file_t .
 	@SUBDIRS="$(SUBDIRS)" PATH=/usr/bin:/bin:/usr/sbin:/sbin ./runtests.pl
 
