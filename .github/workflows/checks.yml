@@ -33,7 +33,7 @@ jobs:
         run: sed -i '' 's/-Wall/-Wall -Werror/' tests/Makefile
       - name: Create a Vagrant VM
         run: vagrant up
-      - name: Allow the machine time to reboot
-        run: sleep 30s
+      - name: Wait for the machine to come up if rebooting
+        run: while ! vagrant ssh -- true; do sleep 1s; done
       - name: Run SELinux testsuite
         run: vagrant ssh -- sudo make -C /root/testsuite test
