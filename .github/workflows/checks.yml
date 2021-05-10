@@ -14,10 +14,10 @@ jobs:
     strategy:
       matrix:
         env:
-          - { image: fedora/33-cloud-base, kernel: latest }
-          - { image: fedora/34-cloud-base, kernel: default }
-          - { image: fedora/34-cloud-base, kernel: secnext }
-          - { image: centos/stream8, kernel: default }
+          #- { image: fedora/33-cloud-base, kernel: latest }
+          #- { image: fedora/34-cloud-base, kernel: default }
+          #- { image: fedora/34-cloud-base, kernel: secnext }
+          - { image: centos/stream8, kernel: latest }
     env:
       IMAGE_NAME: ${{ matrix.env.image }}
       KERNEL_TYPE: ${{ matrix.env.kernel }}
