@@ -1,5 +1,6 @@
 TARGETS = bpf_test
-DEPS = bpf_common.c bpf_common.h
+COMMON_SOURCES = bpf_common.c
+COMMON_HEADERS = bpf_common.h
 LDLIBS += -lselinux -lbpf
 
 # export so that BPF_ENABLED entries get built correctly on local build
@@ -14,4 +15,5 @@ clean:
 	rm -f $(TARGETS)
 	@set -e; for i in $(BPF_ENABLED); do $(MAKE) -C $$i clean ; done
 
-$(TARGETS): $(DEPS)
+bpf_test: bpf_test.c $(COMMON_SOURCES) $(COMMON_HEADERS)
+	$(CC) $(CPPFLAGS) $(CFLAGS) -o bpf_test bpf_test.c $(COMMON_SOURCES) $(LDLIBS) $(LDFLAGS)
