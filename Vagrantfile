@@ -62,6 +62,7 @@ Vagrant.configure("2") do |config|
       perl-lib \
       selinux-policy-devel \
       gcc \
+      clang \
       libselinux-devel \
       net-tools \
       netlabel_tools \

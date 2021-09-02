@@ -32,5 +32,13 @@ jobs:
         run: sed -i '' 's/-Wall/-Wall -Werror/' tests/Makefile
       - name: Create a Vagrant VM
         run: vagrant up
+      - name: Build the tests with gcc
+        run: vagrant ssh -- sudo make -C /root/testsuite/tests CC=gcc
+      - name: Clean up
+        run: vagrant ssh -- sudo make -C /root/testsuite/tests clean
+      - name: Build the tests with clang
+        run: vagrant ssh -- sudo make -C /root/testsuite/tests CC=clang
+      - name: Clean up
+        run: vagrant ssh -- sudo make -C /root/testsuite/tests clean
       - name: Run SELinux testsuite
         run: vagrant ssh -- sudo make -C /root/testsuite test
