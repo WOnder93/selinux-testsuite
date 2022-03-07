@@ -42,8 +42,8 @@ ifeq ($(shell [ $(MOD_POL_VERS) -ge 18 -a $(MAX_KERNEL_POLICY) -ge 30 ] && echo 
 ifneq ($(shell grep -q anon_inode $(POLDEV)/include/support/all_perms.spt && echo true),true)
 CIL_TARGETS += test_anon_inode_class.cil
 endif
-CIL_TARGETS += test_userfaultfd.cil
-TARGETS += test_userfaultfd.te
+CIL_TARGETS += test_userfaultfd.cil test_secretmem.cil
+TARGETS += test_userfaultfd.te test_secretmem.te
 endif
 ifeq ($(shell [ $(MAX_KERNEL_POLICY) -ge 32 ] && echo true),true)
 ifeq ($(shell [ $(POL_VERS) -ge 32 ] && echo true),true)
