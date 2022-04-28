@@ -161,6 +161,8 @@ ifeq ($(DISTRO),RHEL7)
     SUBDIRS:=$(filter-out netlink_socket, $(SUBDIRS))
 endif
 
+SUBDIRS:=sctp
+
 .PHONY: all test clean
 
 all:
