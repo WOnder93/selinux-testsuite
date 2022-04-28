@@ -275,7 +275,7 @@ int main(int argc, char **argv)
 		}
 
 		if (verbose)
-			printf("Client assoc_id: %d\n", sinfo.sinfo_assoc_id);
+			printf("Server assoc_id: %d\n", sinfo.sinfo_assoc_id);
 
 		if (flags & MSG_NOTIFICATION) {
 			result = handle_event(buffer, NULL, NULL, verbose, "Server");
