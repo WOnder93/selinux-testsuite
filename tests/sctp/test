@@ -14,7 +14,7 @@ use Test::More;
 #
 
 BEGIN {
-    $N = 1;
+    $N = 20;
 
     $basedir = $0;
     $basedir =~ s|(.*)/[^/]*|$1|;
