@@ -2,8 +2,6 @@
 
 use Test::Harness;
 
-$Test::Harness::verbose = TRUE;
-
 @dirs = split( / /, $ENV{SUBDIRS} );
 
 for (@dirs) {

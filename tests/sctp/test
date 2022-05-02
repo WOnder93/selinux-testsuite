@@ -20,7 +20,7 @@ BEGIN {
     $basedir =~ s|(.*)/[^/]*|$1|;
 
     # allow SCTP info to be shown during tests
-    $v = "-v";
+    $v = $ARGV[0];
     if ($v) {
         if ( $v ne "-v" ) {
             plan skip_all => "Invalid option (use -v)";
