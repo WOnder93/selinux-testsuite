@@ -250,6 +250,17 @@ int main(int argc, char **argv)
 		printf("Client received new pri addr: %s\n", buffer);
 	rcv_new_addr_buf = strdup(buffer);
 
+	/* Send a message to synchronize with the server */
+	buffer[0] = '\0';
+	result = sctp_sendmsg(client_sock, buffer, 1,
+			      client_res->ai_addr,
+			      client_res->ai_addrlen,
+			      0, 0, 0, 0, 0);
+	if (result < 0) {
+		perror("Client sctp_sendmsg-3");
+		goto err1;
+	}
+
 	/* Client was added */
 	memset(buffer, 0, sizeof(buffer));
 	result = sctp_recvmsg(client_sock, buffer, sizeof(buffer),

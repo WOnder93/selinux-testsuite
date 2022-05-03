@@ -215,6 +215,20 @@ int main(int argc, char **argv)
 		goto err1;
 	}
 
+	/* Receive a message to synchronize with the client */
+	result = sctp_recvmsg(srv_sock, buffer, sizeof(buffer),
+			      (struct sockaddr *)&sin, &sinlen,
+			      &sinfo, &flags);
+	if (result < 0) {
+		perror("Server sctp_recvmsg-3");
+		goto err1;
+	}
+	if (flags & MSG_NOTIFICATION) {
+		result = handle_event(buffer, NULL, NULL, verbose, "Server");
+		if (result == EVENT_SHUTDOWN)
+			goto err1;
+	}
+
 	/* Ready the 2nd cmd line address for BINDX_ADD */
 	result = getaddrinfo(argv[optind + 1], argv[optind + 2],
 			     &srv_hints, &new_pri_addr_res);
@@ -268,7 +282,7 @@ int main(int argc, char **argv)
 				      (struct sockaddr *)&sin, &sinlen,
 				      &sinfo, &flags);
 		if (result < 0) {
-			perror("Server sctp_recvmsg-3");
+			perror("Server sctp_recvmsg-4");
 			goto err1;
 		}
 
