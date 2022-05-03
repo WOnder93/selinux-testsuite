@@ -302,7 +302,7 @@ if ($test_asconf) {
     print "Testing deny SCTP_PARAM_ADD_IP/SCTP_PARAM_SET_PRIMARY\n";
     $result = system
 "runcon -t sctp_asconf_deny_param_add_client_t $basedir/sctp_asconf_params_client $v $ipaddress[0] 1035 2>&1";
-    ok( $result >> 8 eq 11 );   # Client error 'Dynamic Address Reconfiguration'
+    ok( $result >> 8 eq 52 );
 
     server_end($pid);
 

@@ -193,46 +193,119 @@ int main(int argc, char **argv)
 		goto err1;
 	}
 
-	rcv_new_addr_buf = NULL;
+	/* Client is primary */
+	memset(buffer, 0, sizeof(buffer));
+	result = sctp_recvmsg(client_sock, buffer, sizeof(buffer),
+			      (struct sockaddr *)&sin, &sinlen,
+			      NULL, &flags);
+	if (result < 0) {
+		/*
+		 * If SCTP_SET_PEER_PRIMARY_ADDR was rejected on the
+		 * server, we will never receive the notification
+		 * message.
+		 */
+		if (errno == EAGAIN)
+			result = 52;
+		perror("Client sctp_recvmsg-1");
+		goto end;
+	}
+	if (!(flags & MSG_NOTIFICATION && flags & MSG_EOR)) {
+		fprintf(stderr, "Client got unexpected message 1\n");
+		goto err1;
+	}
+	result = handle_event(buffer, NULL, NULL, verbose, "Client");
+	if (result != EVENT_OK) {
+		fprintf(stderr, "Client got unexpected event 1\n");
+		goto err1;
+	}
+
+	/* Send a message to synchronize with the server */
+	buffer[0] = '\0';
+	result = sctp_sendmsg(client_sock, buffer, 1,
+			      client_res->ai_addr,
+			      client_res->ai_addrlen,
+			      0, 0, 0, 0, 0);
+	if (result < 0) {
+		perror("Client sctp_sendmsg-2");
+		goto err1;
+	}
+
+	/* Receive new primary address from the server */
+	memset(buffer, 0, sizeof(buffer));
 	memset(&sinfo, 0, sizeof(struct sctp_sndrcvinfo));
-	/*
-	 * Should receive notifications for initial addr change, then
-	 * the address to match against from the server, then change to new
-	 * peer addr and finally exit.
-	 */
-	while (1) {
-		memset(buffer, 0, sizeof(buffer));
+	result = sctp_recvmsg(client_sock, buffer, sizeof(buffer),
+			      (struct sockaddr *)&sin, &sinlen,
+			      &sinfo, &flags);
+	if (result < 0) {
+		perror("Client sctp_recvmsg-2");
+		goto err1;
+	}
+	if (verbose)
+		printf("Client assoc_id: %d\n", sinfo.sinfo_assoc_id);
+	if (flags & MSG_NOTIFICATION) {
+		fprintf(stderr, "Client got unexpected event 2\n");
+		goto err1;
+	}
+	if (verbose)
+		printf("Client received new pri addr: %s\n", buffer);
+	rcv_new_addr_buf = strdup(buffer);
 
-		result = sctp_recvmsg(client_sock, buffer,
-				      sizeof(buffer),
-				      (struct sockaddr *)&sin,
-				      &sinlen, &sinfo, &flags);
-		if (result < 0 && errno == EAGAIN) {
-			result = EAGAIN;
-			fprintf(stderr, "Client error 'Dynamic Address Reconfiguration'\n");
-			goto end;
-		} else if (result < 0) {
-			perror("Client sctp_recvmsg-1");
-			goto err1;
-		}
+	/* Client was added */
+	memset(buffer, 0, sizeof(buffer));
+	result = sctp_recvmsg(client_sock, buffer, sizeof(buffer),
+			      (struct sockaddr *)&sin, &sinlen,
+			      NULL, &flags);
+	if (result < 0) {
+		perror("Client sctp_recvmsg-3");
+		goto err1;
+	}
+	if (!(flags & MSG_NOTIFICATION && flags & MSG_EOR)) {
+		fprintf(stderr, "Client got unexpected message 3\n");
+		goto err1;
+	}
+	result = handle_event(buffer, NULL, NULL, verbose, "Client");
+	if (result != EVENT_OK) {
+		fprintf(stderr, "Client got unexpected event 3\n");
+		goto err1;
+	}
 
-		if (sinfo.sinfo_assoc_id) {
-			if (verbose)
-				printf("Client assoc_id: %d\n",
-				       sinfo.sinfo_assoc_id);
-		}
-		if (flags & MSG_NOTIFICATION && flags & MSG_EOR) {
-			result = handle_event(buffer, rcv_new_addr_buf,
-					      NULL, verbose, "Client");
-			if (result == EVENT_ADDR_MATCH) /* Have new primary addr */
-				break;
-		} else { /* Should receive only one buffer from server */
-			if (verbose)
-				printf("Client received new pri addr: %s\n",
-				       buffer);
+	/* Client is confirmed */
+	memset(buffer, 0, sizeof(buffer));
+	result = sctp_recvmsg(client_sock, buffer, sizeof(buffer),
+			      (struct sockaddr *)&sin, &sinlen,
+			      NULL, &flags);
+	if (result < 0) {
+		perror("Client sctp_recvmsg-3");
+		goto err1;
+	}
+	if (!(flags & MSG_NOTIFICATION && flags & MSG_EOR)) {
+		fprintf(stderr, "Client got unexpected message 3\n");
+		goto err1;
+	}
+	result = handle_event(buffer, NULL, NULL, verbose, "Client");
+	if (result != EVENT_OK) {
+		fprintf(stderr, "Client got unexpected event 3\n");
+		goto err1;
+	}
 
-			rcv_new_addr_buf = strdup(buffer);
-		}
+	/* Client is now the new primary */
+	memset(buffer, 0, sizeof(buffer));
+	result = sctp_recvmsg(client_sock, buffer, sizeof(buffer),
+			      (struct sockaddr *)&sin, &sinlen,
+			      NULL, &flags);
+	if (result < 0) {
+		perror("Client sctp_recvmsg-4");
+		goto err1;
+	}
+	if (!(flags & MSG_NOTIFICATION && flags & MSG_EOR)) {
+		fprintf(stderr, "Client got unexpected message 4\n");
+		goto err1;
+	}
+	result = handle_event(buffer, rcv_new_addr_buf, NULL,
+			      verbose, "Client");
+	if (result != EVENT_ADDR_MATCH) {
+		fprintf(stderr, "Client got unexpected event 4\n");
+		goto err1;
 	}
 
 	/* Get new CLIENT primary address */

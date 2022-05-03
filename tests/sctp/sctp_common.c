@@ -209,7 +209,7 @@ int handle_event(void *buf, char *cmp_addr, sctp_assoc_t *assoc_id,
 			if (cmp_addr) {
 				if (!strcmp(ap, cmp_addr)) {
 					if (verbose)
-						printf("\t%s and is now the new primary\n", text);
+						printf("\t%s is now the new primary\n", text);
 
 					return EVENT_ADDR_MATCH;
 				}

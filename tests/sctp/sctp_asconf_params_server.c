@@ -200,6 +200,20 @@ int main(int argc, char **argv)
 	if (sin.ss_family == AF_INET6) /* Set scope_id for local link */
 		((struct sockaddr_in6 *)&sin)->sin6_scope_id = if_index;
 
+	/* Receive a message to synchronize with the client */
+	result = sctp_recvmsg(srv_sock, buffer, sizeof(buffer),
+			      (struct sockaddr *)&sin, &sinlen,
+			      &sinfo, &flags);
+	if (result < 0) {
+		perror("Server sctp_recvmsg-2");
+		goto err1;
+	}
+	if (flags & MSG_NOTIFICATION) {
+		result = handle_event(buffer, NULL, NULL, verbose, "Server");
+		if (result == EVENT_SHUTDOWN)
+			goto err1;
+	}
+
 	/* Send client the new primary address */
 	result = sctp_sendmsg(srv_sock, new_pri_addr, new_len,
 			      (struct sockaddr *)&sin,
@@ -224,13 +238,6 @@ int main(int argc, char **argv)
 		       argv[optind + 1],
 		       ((struct sockaddr_in6 *)
 			new_pri_addr_res->ai_addr)->sin6_scope_id);
-
-	/*
-	 * We can't do the sctp_bindx() calls too fast, otherwise the test
-	 * that checks if these are denied would fail. Therefore, sleep for
-	 * a bit to allow the client to catch up.
-	 */
-	sleep(1);
 
 	/*
 	 * Now call sctp_bindx(3) to add 'new_pri_addr'. This uses Dynamic
@@ -270,7 +277,7 @@ int main(int argc, char **argv)
 				      (struct sockaddr *)&sin, &sinlen,
 				      &sinfo, &flags);
 		if (result < 0) {
-			perror("Server sctp_recvmsg-2");
+			perror("Server sctp_recvmsg-3");
 			goto err1;
 		}
 
