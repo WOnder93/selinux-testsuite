@@ -112,7 +112,7 @@ static int get_set_primaddr(int socket, sctp_assoc_t id, bool verbose)
 
 int main(int argc, char **argv)
 {
-	int opt, client_sock, result, flags = 0, on = 1;
+	int opt, client_sock, result, flags = 0, on = 1, off = 0;
 	struct addrinfo client_hints, *client_res;
 	struct sctp_sndrcvinfo sinfo;
 	struct sockaddr_storage sin;
@@ -177,7 +177,7 @@ int main(int argc, char **argv)
 		goto err1;
 	}
 
-	result = set_subscr_events(client_sock, on, on, on, on);
+	result = set_subscr_events(client_sock, on, off, on, off);
 	if (result < 0) {
 		perror("Client setsockopt SCTP_EVENTS");
 		goto err1;
