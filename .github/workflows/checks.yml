@@ -36,6 +36,6 @@ jobs:
       - name: Wait for the machine to come up if rebooting
         run: while ! vagrant ssh -- true; do sleep 1s; done
       - name: Run SELinux testsuite
-        run: vagrant ssh -- sudo make -C /root/testsuite test
+        run: vagrant ssh -- sudo bash /root/testsuite/trace-ts.sh
       - name: Check .gitignore coverage
         run: test "$(vagrant ssh -- sudo git -C /root/testsuite ls-files -o --exclude-standard | wc -l)" -eq 0
