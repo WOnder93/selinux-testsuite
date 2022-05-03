@@ -22,7 +22,7 @@ static void usage(char *progname)
 
 int main(int argc, char **argv)
 {
-	int opt, srv_sock, result, on = 1, flags = 0, if_index = 0;
+	int opt, srv_sock, result, on = 1, off = 0, flags = 0, if_index = 0;
 	size_t new_len;
 	struct addrinfo srv_hints, *srv_res;
 	struct addrinfo *new_pri_addr_res;
@@ -138,7 +138,7 @@ int main(int argc, char **argv)
 		fclose(f);
 	}
 
-	result = set_subscr_events(srv_sock, on, on, on, on);
+	result = set_subscr_events(srv_sock, on, on, off, on);
 	if (result < 0) {
 		perror("Server setsockopt SCTP_EVENTS");
 		goto err1;
