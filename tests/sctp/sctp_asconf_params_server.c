@@ -138,37 +138,28 @@ int main(int argc, char **argv)
 		fclose(f);
 	}
 
-	result = set_subscr_events(srv_sock, on, on, off, on);
+	result = set_subscr_events(srv_sock, on, off, off, on);
 	if (result < 0) {
 		perror("Server setsockopt SCTP_EVENTS");
 		goto err1;
 	}
 
-	/*
-	 * Receive notifications for initial addr changes, then a request for
-	 * the 'new_pri_addr' from the client.
-	 */
+	/* Receive the request for 'new_pri_addr' from the client. */
 	memset(&sinfo, 0, sizeof(struct sctp_sndrcvinfo));
-	while (1) {
-		result = sctp_recvmsg(srv_sock, buffer, sizeof(buffer),
-				      (struct sockaddr *)&sin, &sinlen,
-				      &sinfo, &flags);
-		if (result < 0) {
-			perror("Server sctp_recvmsg-1");
-			goto err1;
-		}
-
-		if (flags & MSG_NOTIFICATION && flags & MSG_EOR) {
-			result = handle_event(buffer, NULL, NULL, verbose,
-					      "Server");
-			if (result == EVENT_SHUTDOWN)
-				goto err1;
-		} else {
-			if (verbose)
-				printf("Server received: %s\n", buffer);
-			break;
-		}
+	result = sctp_recvmsg(srv_sock, buffer, sizeof(buffer),
+			      (struct sockaddr *)&sin, &sinlen,
+			      &sinfo, &flags);
+	if (result < 0) {
+		perror("Server sctp_recvmsg-1");
+		goto err1;
 	}
+	if (flags & MSG_NOTIFICATION && flags & MSG_EOR) {
+		result = handle_event(buffer, NULL, NULL, verbose, "Server");
+		fprintf(stderr, "Server sctp_recvmsg-1: Unexpected event\n");
+		goto err1;
+	}
+	if (verbose)
+		printf("Server received: %s\n", buffer);
 
 	/*
 	 * Request the peer sets the 1st cmd line address as peer primary.
