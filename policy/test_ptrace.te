@@ -26,7 +26,7 @@ typeattribute test_ptrace_traced_t ptracedomain;
 allow test_ptrace_traced_t test_file_t:fifo_file rw_file_perms;
 
 # Allow the tracer domain to trace the traced domain.
-allow test_ptrace_tracer_t test_ptrace_traced_t:process ptrace;
+#allow test_ptrace_tracer_t test_ptrace_traced_t:process ptrace;
 
 # Let the tracer wait on the traced domain.
 allow test_ptrace_traced_t test_ptrace_tracer_t:process sigchld;
