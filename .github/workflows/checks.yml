@@ -18,13 +18,17 @@ jobs:
       matrix:
         domain: [unconfined_t, sysadm_t]
         arch: [x86_64, aarch64]
-        kernel: [latest, secnext]
+        system:
+          - { compose: Fedora-latest,    kernel: latest }
+          - { compose: Fedora-Rawhide,   kernel: secnext }
+          - { compose: CentOS-Stream-9,  kernel: latest }
+          - { compose: CentOS-Stream-10, kernel: latest }
     steps:
       - name: Schedule test on Testing Farm
         uses: sclorg/testing-farm-as-github-action@main
         with:
           api_key: ${{ secrets.TESTING_FARM_API_TOKEN }}
           arch: ${{ matrix.arch }}
-          compose: Fedora-${{ matrix.kernel == 'secnext' && 'Rawhide' || 'latest' }}
-          variables: STS_ROOT_DOMAIN=${{ matrix.domain }}; STS_KERNEL=${{ matrix.kernel }}
+          compose: ${{ matrix.system.compose }}
+          variables: STS_ROOT_DOMAIN=${{ matrix.domain }}; STS_KERNEL=${{ matrix.system.kernel }}
           tmt_plan_filter: tag:ci

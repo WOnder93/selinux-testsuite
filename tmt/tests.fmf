@@ -25,18 +25,26 @@
         ;;
       esac
 
+      if rpm --quiet -q --whatprovides redhat-release; then
+        # RHEL/CentOS
+        kernel_subpkgs="$kernel_subpkgs modules-extra"
+      else
+        # Fedora
+        kernel_subpkgs="modules devel"
+      fi
+
       case "$STS_KERNEL" in
       default|'')
-        dnf install -y kernel-modules-$(uname -r) kernel-devel-$(uname -r)
+        dnf install -y $(for s in $kernel_subpkgs; do echo kernel-$s-$(uname -r); done)
         ;;
       latest)
-        dnf install -y kernel-modules kernel-devel
+        dnf install -y $(for s in $kernel_subpkgs; do echo kernel-$s; done)
         ;;
       secnext)
         dnf install -y \
           --nogpgcheck --releasever rawhide \
           --repofrompath 'kernel-secnext,https://repo.paul-moore.com/rawhide/$basearch' \
-          kernel-modules-*.secnext.* kernel-devel-*.secnext.*
+          $(for s in $kernel_subpkgs; do echo kernel-$s-*.secnext.*; done)
         ;;
       *)
         echo "Invalid STS_KERNEL value!"
