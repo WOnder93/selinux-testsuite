@@ -25,12 +25,9 @@
         ;;
       esac
 
+      kernel_subpkgs="modules devel"
       if rpm --quiet -q --whatprovides redhat-release; then
-        # RHEL/CentOS
         kernel_subpkgs="$kernel_subpkgs modules-extra"
-      else
-        # Fedora
-        kernel_subpkgs="modules devel"
       fi
 
       case "$STS_KERNEL" in
