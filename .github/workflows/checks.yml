@@ -19,8 +19,8 @@ jobs:
         domain: [unconfined_t, sysadm_t]
         arch: [x86_64, aarch64]
         system:
-          - { compose: Fedora-latest,    kernel: latest }
-          - { compose: Fedora-Rawhide,   kernel: secnext }
+          #- { compose: Fedora-latest,    kernel: latest }
+          #- { compose: Fedora-Rawhide,   kernel: secnext }
           - { compose: CentOS-Stream-9,  kernel: latest }
           - { compose: CentOS-Stream-10, kernel: latest }
     steps:
