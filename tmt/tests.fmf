@@ -116,7 +116,7 @@
   summary: Check unwanted denials
   order: 4
   tag: [ci]
-  test: '! ausearch -m avc -i </dev/null | grep "$STS_ROOT_DOMAIN"'
+  test: '! ausearch -m avc -i </dev/null | grep "^type=AVC .*$STS_ROOT_DOMAIN"'
 /gitignore-coverage:
   summary: Check .gitignore coverage
   order: 4
