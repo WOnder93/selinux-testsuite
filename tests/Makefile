@@ -183,6 +183,8 @@ ifeq ($(DISTRO),RHEL7)
     SUBDIRS:=$(filter-out netlink_socket, $(SUBDIRS))
 endif
 
+SUBDIRS:=unix_socket
+
 .PHONY: all test clean
 
 all:

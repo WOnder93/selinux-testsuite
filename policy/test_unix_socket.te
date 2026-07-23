@@ -58,3 +58,38 @@ allow test_unix_server_t test_unix_dgram_client_t:unix_dgram_socket sendto;
 type test_socketpair_t;
 testsuite_domain_type(test_socketpair_t)
 typeattribute test_socketpair_t unixsocketdomain;
+
+#
+# Domains for MSG_CMSG_SEALED tests.
+#
+type test_unix_payload_t;
+files_type(test_unix_payload_t)
+
+type test_unix_fd_forwarder_t;
+testsuite_domain_type(test_unix_fd_forwarder_t)
+typeattribute test_unix_fd_forwarder_t unixsocketdomain;
+
+type_transition test_unix_fd_forwarder_t test_file_t:sock_file test_unix_server_sockfile_t;
+allow test_unix_fd_forwarder_t test_file_t:dir rw_dir_perms;
+allow test_unix_fd_forwarder_t test_unix_server_sockfile_t:sock_file { create unlink };
+
+# For writing to flag file:
+allow test_unix_fd_forwarder_t test_file_t:fifo_file rw_file_perms;
+
+type test_unix_fd_sender_t;
+testsuite_domain_type(test_unix_fd_sender_t)
+typeattribute test_unix_fd_sender_t unixsocketdomain;
+
+allow test_unix_fd_sender_t test_unix_fd_forwarder_t:unix_stream_socket connectto;
+allow test_unix_fd_sender_t test_unix_server_sockfile_t:sock_file write;
+
+allow test_unix_fd_sender_t test_unix_payload_t:file rw_file_perms;
+
+type test_unix_fd_receiver_t;
+testsuite_domain_type(test_unix_fd_receiver_t)
+typeattribute test_unix_fd_receiver_t unixsocketdomain;
+
+allow test_unix_fd_receiver_t test_unix_fd_forwarder_t:unix_stream_socket connectto;
+allow test_unix_fd_receiver_t test_unix_server_sockfile_t:sock_file write;
+
+allow test_unix_fd_receiver_t test_unix_payload_t:file rw_inherited_file_perms;

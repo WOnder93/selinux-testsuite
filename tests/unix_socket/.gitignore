@@ -1,3 +1,6 @@
 client
 server
 socketpair
+fd_forwarder
+fd_receiver
+fd_sender

@@ -1,4 +1,4 @@
-TARGETS=client server socketpair
+TARGETS=client server socketpair fd_forwarder fd_receiver fd_sender
 
 LDLIBS+= -lselinux
 

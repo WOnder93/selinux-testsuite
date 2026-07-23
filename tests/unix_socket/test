@@ -8,6 +8,7 @@ BEGIN {
 
     $test_count = 8;
     $socketpair = 0;
+    $sealed_fds = 0;
 
     $kvercur = `uname -r`;
     chomp($kvercur);
@@ -20,6 +21,13 @@ BEGIN {
         $socketpair = 1;
     }
 
+    # Test MSG_CMSG_SEALED (for forwarding fds over unix sockets)
+    $result = `$basedir/../kvercmp $kvercur 7.2`;
+    if ( $result >= 0 ) {
+        $test_count += 2;
+        $sealed_fds = 1;
+    }
+
     plan tests => $test_count;
 }
 
@@ -28,13 +36,13 @@ BEGIN {
 #
 
 sub server_start {
-    my ( $runcon_args, $args ) = @_;
+    my ( $exe, $runcon_args, $args ) = @_;
     my $pid;
 
     system("mkfifo $basedir/flag");
 
     if ( ( $pid = fork() ) == 0 ) {
-        exec "runcon $runcon_args $basedir/server -f $basedir/flag $args";
+        exec "runcon $runcon_args $basedir/$exe -f $basedir/flag $args";
     }
 
     # Wait for it to initialize.
@@ -55,7 +63,11 @@ sub server_end {
 }
 
 # Start the stream server.
-$pid = server_start( "-t test_unix_server_t", "-a stream test_server_sock" );
+$pid = server_start(
+    "server",
+    "-t test_unix_server_t",
+    "-a stream test_server_sock"
+);
 
 # Verify that stream client can connectto server.
 $result = system
@@ -71,7 +83,8 @@ ok($result);
 server_end($pid);
 
 # Start the dgram server.
-$pid = server_start( "-t test_unix_server_t", "-a dgram test_server_sock" );
+$pid = server_start( "server", "-t test_unix_server_t",
+    "-a dgram test_server_sock" );
 
 # Verify that dgram client can sendto server.
 $result = system
@@ -91,8 +104,11 @@ server_end($pid);
 #
 
 # Start the stream server.
-$pid =
-  server_start( "-t test_unix_server_t", "stream $basedir/test_server_sock" );
+$pid = server_start(
+    "server",
+    "-t test_unix_server_t",
+    "stream $basedir/test_server_sock"
+);
 
 # Verify that stream client can connectto server.
 $result = system
@@ -108,8 +124,11 @@ ok($result);
 server_end($pid);
 
 # Start the dgram server.
-$pid =
-  server_start( "-t test_unix_server_t", "dgram $basedir/test_server_sock" );
+$pid = server_start(
+    "server",
+    "-t test_unix_server_t",
+    "dgram $basedir/test_server_sock"
+);
 
 # Verify that dgram client can sendto server.
 $result = system
@@ -134,6 +153,34 @@ if ($socketpair) {
 
     $result = system "runcon -t test_socketpair_t $basedir/socketpair dgram";
     ok( $result, 0 );
+}
+
+if ($sealed_fds) {
+    #### Test file handle forwarding without needing access to the forwarded file.
+
+    # Start the forwarder
+    $pid = server_start( "fd_forwarder", "-t test_unix_fd_forwarder_t",
+        "$basedir/test_server_sock" );
+
+    # Create and label the payload file
+    system "touch $basedir/payload_file";
+    system "chcon -t test_unix_payload_t $basedir/payload_file";
+
+    # Run the sender
+    $result = system
+"runcon -t test_unix_fd_sender_t $basedir/fd_sender $basedir/test_server_sock $basedir/payload_file";
+    ok( $result, 0 );
+
+    # Run the receiver
+    $result = system
+"runcon -t test_unix_fd_receiver_t $basedir/fd_receiver $basedir/test_server_sock";
+    ok( $result, 0 );
+
+    # Kill the server.
+    server_end($pid);
+
+    # Clean up.
+    system "rm -f $basedir/test_server_sock";
 }
 
 exit;
