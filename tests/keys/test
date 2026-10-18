@@ -29,6 +29,9 @@ BEGIN {
         $test_link_53 = 1;
     }
 
+    # KEYCTL_DH_COMPUTE is disabled in FIPS mode
+    chomp( $fips = `cat /proc/sys/crypto/fips_enabled 2>/dev/null` );
+    $skip_dh = ( $fips eq "1" ) ? 1 : 0;
     plan tests => $test_count;
 }
 
@@ -51,8 +54,11 @@ ok( $result >> 8 eq 6 );
 $result = system "runcon -t test_key_no_view_t $basedir/keyctl $v 2>&1";
 ok( $result >> 8 eq 8 );
 
-$result = system "runcon -t test_key_no_read_t $basedir/keyctl $v 2>&1";
-ok( $result >> 8 eq 9 );
+SKIP: {
+    skip( "KEYCTL_DH_COMPUTE unavailable in FIPS mode", 1 ) if $skip_dh;
+    $result = system "runcon -t test_key_no_read_t $basedir/keyctl $v 2>&1";
+    ok( $result >> 8 eq 9 );
+}
 
 $result = system "runcon -t test_key_no_link_t $basedir/keyctl $v 2>&1";
 if ($test_link_53) {
@@ -101,9 +107,12 @@ $result = system(
 );
 ok( $result >> 8 eq 6 );
 
-$result = system(
-"runcon -t test_keyring_service_t $basedir/keyring_service $v test_request_keys_no_read_t $basedir/request_keys 2>&1"
-);
-ok( $result >> 8 eq 8 );
+SKIP: {
+    skip( "KEYCTL_DH_COMPUTE unavailable in FIPS mode", 1 ) if $skip_dh;
+    $result = system(
+    "runcon -t test_keyring_service_t $basedir/keyring_service $v test_request_keys_no_read_t $basedir/request_keys 2>&1"
+    );
+    ok( $result >> 8 eq 8 );
+}
 
 exit;
