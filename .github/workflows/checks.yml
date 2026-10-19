@@ -32,6 +32,7 @@ jobs:
         domain: [unconfined_t, sysadm_t]
         arch: [x86_64, aarch64]
         kernel: [latest, secnext]
+        fips: [0, 1]
     steps:
       - name: Schedule test on Testing Farm
         uses: sclorg/testing-farm-as-github-action@main
@@ -39,7 +40,7 @@ jobs:
           api_key: ${{ secrets.TESTING_FARM_API_TOKEN }}
           arch: ${{ matrix.arch }}
           compose: Fedora-${{ matrix.kernel == 'secnext' && 'Rawhide' || 'latest' }}
-          variables: STS_ROOT_DOMAIN=${{ matrix.domain }}; STS_KERNEL=${{ matrix.kernel }}
+          variables: STS_ROOT_DOMAIN=${{ matrix.domain }}; STS_KERNEL=${{ matrix.kernel }}; STS_FIPS=${{ matrix.fips }}
           tmt_plan_filter: tag:ci
           # no need for the "guest setup" - it just takes a lot of time for no benefit
           environment_settings: '{ "pipeline": { "skip_guest_setup": true } }'

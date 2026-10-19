@@ -86,6 +86,18 @@
         ;;
       esac
 
+      case "$STS_FIPS" in
+      1)
+        grubby --update-kernel=ALL --args fips=1
+        reboot=1
+        ;;
+      0)
+        ;;
+      *)
+        echo "Invalid STS_FIPS value!"
+        exit 1
+      esac
+
       if [ "$(grubby --default-kernel)" != "/boot/vmlinuz-$(uname -r)" ]; then
         reboot=1
       fi
